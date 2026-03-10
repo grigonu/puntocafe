@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Punto Pasta | Experiență Interactivă</title>
+    <title>Punto Pasta | Spiritul Italiei</title>
     
     <!-- Three.js Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- GSAP pentru animații ultra-smooth -->
+    <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
@@ -19,9 +19,9 @@
     <style>
         :root {
             --bg-dark: #0f0a08;
-            --accent-gold: #e67e22;
-            --accent-red: #c0392b;
-            --accent-green: #27ae60;
+            --accent-gold: #f1c40f;
+            --accent-red: #e74c3c;
+            --accent-green: #2ecc71;
             --text-white: #ffffff;
             --font-serif: 'Playfair Display', serif;
             --font-sans: 'Inter', sans-serif;
@@ -42,7 +42,18 @@
             line-height: 1.6;
         }
 
-        /* --- Custom Cursor --- */
+        /* Fundal cu textură de "făină" */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://www.transparenttextures.com/patterns/dust.png');
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* --- Cursor Personalizat --- */
         #cursor {
             position: fixed;
             width: 15px;
@@ -55,30 +66,30 @@
             mix-blend-mode: difference;
         }
 
-        /* --- 3D Scene --- */
+        /* --- Container 3D --- */
         #canvas-container {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: 0; pointer-events: none;
         }
 
-        /* --- Smooth Scroll Container --- */
         #smooth-wrapper {
             position: relative;
             z-index: 10;
         }
 
-        /* --- Navigation --- */
+        /* --- Navigație --- */
         nav {
             position: fixed;
             top: 0; width: 100%;
-            padding: 1.5rem 5%;
+            padding: 2rem 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 100;
+            background: linear-gradient(to bottom, rgba(15,10,8,0.9), transparent);
         }
-        .logo { font-family: var(--font-serif); font-size: 1.8rem; color: var(--accent-gold); font-weight: 900; }
+        .logo { font-family: var(--font-serif); font-size: 2rem; color: var(--accent-gold); font-weight: 900; text-transform: lowercase; }
 
         /* --- Hero --- */
         section {
@@ -92,94 +103,96 @@
 
         h1 {
             font-family: var(--font-serif);
-            font-size: clamp(3rem, 15vw, 10rem);
+            font-size: clamp(4rem, 18vw, 12rem);
             line-height: 0.8;
             margin-bottom: 2rem;
-            overflow: hidden;
+            letter-spacing: -5px;
         }
         
-        /* Efect de text split */
-        .char { display: inline-block; transform: translateY(100%); }
+        .char { display: inline-block; transform: translateY(105%); }
 
         .hero-p {
-            font-size: 1.1rem;
-            max-width: 450px;
+            font-size: 1.3rem;
+            max-width: 500px;
             margin-bottom: 2rem;
             opacity: 0;
-            transform: translateX(-30px);
+            transform: translateY(30px);
+            color: rgba(255,255,255,0.8);
+            font-style: italic;
         }
 
-        /* --- Fancy Bento Grid --- */
+        /* --- Bento Grid --- */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(12, 1fr);
-            gap: 30px;
-            margin-top: 50px;
+            gap: 25px;
+            padding: 50px 0;
         }
 
         .bento-card {
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 30px;
-            padding: 3rem;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 40px;
+            padding: 3.5rem;
             position: relative;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
-            min-height: 450px;
-            transform: translateY(100px);
+            min-height: 500px;
             opacity: 0;
         }
 
         .card-parallax-bg {
             position: absolute;
-            top: -20%; left: 0; width: 100%; height: 140%;
+            top: -15%; left: 0; width: 100%; height: 130%;
             z-index: -1;
             object-fit: cover;
-            opacity: 0.3;
-            filter: grayscale(40%);
-            transition: opacity 0.5s ease;
+            opacity: 0.4;
+            transition: opacity 0.6s ease, transform 0.6s ease;
         }
         
-        .bento-card:hover .card-parallax-bg { opacity: 0.6; filter: grayscale(0%); }
+        .bento-card:hover .card-parallax-bg { opacity: 0.8; transform: scale(1.05); }
 
-        .big { grid-column: span 7; }
-        .small { grid-column: span 5; }
-        .full { grid-column: span 12; text-align: center; min-height: 300px; }
+        .big { grid-column: span 8; }
+        .small { grid-column: span 4; }
+        .full { grid-column: span 12; text-align: center; background: var(--accent-red); color: white; min-height: 400px; }
 
-        /* --- Horizontal Ingredients Section --- */
+        /* --- Secțiune Orizontală --- */
         .horizontal-section {
             height: 100vh;
             display: flex;
             align-items: center;
-            background: #140d0a;
+            background: #1a110d;
             overflow: hidden;
         }
         .horizontal-wrapper {
             display: flex;
-            padding: 0 10%;
-            gap: 10vw;
+            padding: 0 5%;
+            gap: 8vw;
         }
         .ingredient-item {
             flex-shrink: 0;
-            width: 400px;
+            width: 450px;
             text-align: center;
         }
         .ingredient-item img {
             width: 100%;
-            height: 300px;
+            height: 400px;
             object-fit: cover;
-            border-radius: 20px;
-            margin-bottom: 1.5rem;
+            border-radius: 30px;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
+        .ingredient-item h3 { font-family: var(--font-serif); font-size: 2.5rem; margin-bottom: 1rem; }
 
         /* --- Footer --- */
-        footer { padding: 8rem 10%; background: #000; display: flex; justify-content: space-between; }
-        .footer-logo { font-family: var(--font-serif); font-size: 4rem; color: var(--accent-red); }
+        footer { padding: 10rem 10%; background: #000; display: flex; justify-content: space-between; align-items: flex-end; }
+        .footer-logo { font-family: var(--font-serif); font-size: 5rem; color: var(--accent-gold); line-height: 0.8; }
 
         @media (max-width: 900px) {
             .big, .small { grid-column: span 12; }
+            nav { padding: 1.5rem 5%; }
         }
     </style>
 </head>
@@ -190,69 +203,71 @@
 
     <div id="smooth-wrapper">
         <nav>
-            <div class="logo">Punto.</div>
-            <div style="font-family: 'Roboto Mono'; font-size: 0.7rem; letter-spacing: 3px;">CLUJ-NAPOCA // 2024</div>
+            <div class="logo">punto pasta.</div>
+            <div style="font-family: 'Roboto Mono'; font-size: 0.8rem; letter-spacing: 2px; color: var(--accent-gold);">MAMMA MIA! // CLUJ</div>
         </nav>
 
-        <!-- Hero Section cu Text Animation -->
         <section id="home">
             <h1 id="hero-title">
-                <span class="line">PUNTO</span><br>
-                <span class="line" style="color: var(--accent-red); font-style: italic;">PASTA</span>
+                <span class="line">ARTIZANAL.</span><br>
+                <span class="line" style="color: var(--accent-gold);">ITALIAN.</span>
             </h1>
-            <p class="hero-p" id="hero-p">Tradiție napoletană, ingrediente premium și atmosfera unei trattorii autentice, chiar în inima Transilvaniei.</p>
+            <p class="hero-p" id="hero-p">O experiență imersivă în gustul sudului Italiei. De la Feliciano, cu dragoste, pentru Cluj.</p>
         </section>
 
-        <!-- Bento Grid cu Parallax si Skew Reveal -->
         <section id="menu">
-            <h2 style="font-family: var(--font-serif); font-size: 3rem; margin-bottom: 3rem;">Meniul Nostru</h2>
+            <h2 style="font-family: var(--font-serif); font-size: 4rem; margin-bottom: 4rem; text-align: center;">La Nostra Passione</h2>
             <div class="grid-container">
                 <div class="bento-card big h-target">
-                    <img src="https://images.unsplash.com/photo-1546549032-9571cd6b27df?q=80&w=1200" class="card-parallax-bg" alt="Carbonara">
-                    <h3 style="font-family: var(--font-serif); font-size: 2.5rem;">Carbonara</h3>
-                    <p>Guanciale, Pecorino Romano și pasiune.</p>
+                    <img src="https://images.unsplash.com/photo-1612874742237-6526221588e3?q=80&w=1200" class="card-parallax-bg" alt="Pasta Carbonara">
+                    <h3 style="font-family: var(--font-serif); font-size: 3rem;">Carbonara Autentică</h3>
+                    <p>Secretul stă în guanciale și prospețimea oului.</p>
                 </div>
                 <div class="bento-card small h-target">
-                    <img src="https://images.unsplash.com/photo-1595295333158-4742f28fbd85?q=80&w=1200" class="card-parallax-bg" alt="Pesto">
-                    <h3 style="font-family: var(--font-serif); font-size: 2.5rem;">Pesto</h3>
-                    <p>Busuioc proaspăt și arome de vară.</p>
+                    <img src="https://images.unsplash.com/photo-1595295333158-4742f28fbd85?q=80&w=800" class="card-parallax-bg" alt="Pesto Pasta">
+                    <h3 style="font-family: var(--font-serif); font-size: 2.5rem;">Linguine Pesto</h3>
+                    <p>Busuioc proaspăt și arome de vară genoveză.</p>
                 </div>
-                <div class="bento-card full h-target" style="background: var(--accent-gold); color: black;">
-                    <h2 style="font-family: var(--font-serif); font-size: 4rem;">100% ARTIZANAL</h2>
-                    <p>Fiecare porție de paste este proaspăt modelată în bucătăria noastră.</p>
+                <div class="bento-card full h-target">
+                    <img src="https://images.unsplash.com/photo-1551183053-bf91a1d81141?q=80&w=1600" class="card-parallax-bg" style="opacity: 0.2;" alt="Restaurant Atmosphere">
+                    <h2 style="font-family: var(--font-serif); font-size: 5rem; letter-spacing: -2px;">TRATTORIA VIVA</h2>
+                    <p style="font-size: 1.5rem; max-width: 800px; margin: 0 auto;">Simte vibrația unui prânz în Napoli chiar în centrul orașului.</p>
                 </div>
             </div>
         </section>
 
-        <!-- Section Orizontala pentru Ingrediente -->
         <div class="horizontal-section">
             <div class="horizontal-wrapper">
                 <div class="ingredient-item">
-                    <h2 style="font-size: 8rem; font-family: var(--font-serif); opacity: 0.1; position: absolute; left: 0;">INGREDIENTE</h2>
+                    <h2 style="font-size: 12rem; font-family: var(--font-serif); opacity: 0.05; position: absolute; left: 0; pointer-events: none;">ECCELLENZA</h2>
                 </div>
                 <div class="ingredient-item">
-                    <img src="https://images.unsplash.com/photo-1606923829579-0cb981a83e2e?q=80&w=600" alt="Tomatoes">
+                    <img src="https://images.unsplash.com/photo-1590779033100-9f60705a2f3d?q=80&w=800" alt="Pomodori">
                     <h3>Pomodoro San Marzano</h3>
-                    <p>Crescute la baza vulcanului Vezuviu.</p>
+                    <p>Roșii crescute în solul vulcanic al Vezuviului.</p>
                 </div>
                 <div class="ingredient-item">
-                    <img src="https://images.unsplash.com/photo-1551462147-3a88588d5019?q=80&w=600" alt="Flour">
-                    <h3>Farina Tipo 00</h3>
-                    <p>Secretul texturii perfecte a pastelor noastre.</p>
+                    <img src="https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?q=80&w=800" alt="Fresh Pasta">
+                    <h3>Pasta Fresca</h3>
+                    <p>Făină Tipo 00 și ouă de fermă, frământate zilnic.</p>
                 </div>
                 <div class="ingredient-item">
-                    <img src="https://images.unsplash.com/photo-1474623875354-934c37d650a7?q=80&w=600" alt="Olive Oil">
-                    <h3>Olio di Oliva</h3>
-                    <p>Presat la rece, pentru un gust echilibrat.</p>
+                    <img src="https://images.unsplash.com/photo-1516750105099-4b8a83e217ee?q=80&w=800" alt="Limoncello bottle">
+                    <h3>Limoncello di Capri</h3>
+                    <p>Digestivul perfect pentru un final de masă regal.</p>
                 </div>
             </div>
         </div>
 
         <footer id="contact">
-            <div class="footer-logo">Punto.</div>
-            <div style="text-align: right;">
-                <p>STRADA MEMORANDUMULUI 2</p>
-                <p style="color: var(--accent-gold); font-family: 'Roboto Mono';">0770 875 153</p>
+            <div class="footer-logo">Punto.<br><span style="color: var(--accent-red)">Pasta.</span></div>
+            <div style="text-align: right; font-family: 'Roboto Mono';">
+                <p>STR. MEMORANDUMULUI 2, CLUJ</p>
+                <p style="color: var(--accent-gold); font-size: 1.5rem; margin-top: 10px;">0770 875 153</p>
+                <div style="margin-top: 30px; display: flex; gap: 20px; justify-content: flex-end;">
+                    <span class="h-target">INSTAGRAM</span>
+                    <span class="h-target">FACEBOOK</span>
+                </div>
             </div>
         </footer>
     </div>
@@ -260,94 +275,52 @@
     <script>
         gsap.registerPlugin(ScrollTrigger);
 
-        // --- Custom Cursor ---
+        // --- Cursor ---
         const cursor = document.getElementById('cursor');
         document.addEventListener('mousemove', e => {
             gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.1 });
         });
 
-        // --- Text Split Animation (Hero) ---
+        // --- Hero Text Animation ---
         const heroTitle = document.getElementById('hero-title');
-        const lines = heroTitle.querySelectorAll('.line');
-        lines.forEach(line => {
+        heroTitle.querySelectorAll('.line').forEach(line => {
             const text = line.innerText;
             line.innerHTML = text.split('').map(char => `<span class="char">${char}</span>`).join('');
         });
 
         const heroTl = gsap.timeline({ defaults: { ease: "power4.out" }});
-        heroTl.to(".char", { y: 0, duration: 1, stagger: 0.03, delay: 0.5 })
-              .to("#hero-p", { opacity: 1, x: 0, duration: 1 }, "-=0.5");
+        heroTl.to(".char", { y: 0, duration: 1.2, stagger: 0.03, delay: 0.5 })
+              .to("#hero-p", { opacity: 1, y: 0, duration: 1 }, "-=0.8");
 
-        // --- Scroll Triggered Bento Cards ---
+        // --- Scroll Bento Cards ---
         gsap.utils.toArray(".bento-card").forEach(card => {
             gsap.to(card, {
-                scrollTrigger: {
-                    trigger: card,
-                    start: "top bottom-=100px",
-                    toggleActions: "play none none reverse"
-                },
-                y: 0,
-                opacity: 1,
-                duration: 1.2,
-                ease: "power3.out"
+                scrollTrigger: { trigger: card, start: "top bottom-=50px", toggleActions: "play none none reverse" },
+                y: -50, opacity: 1, duration: 1.2, ease: "power3.out"
             });
-
-            // Parallax la imaginea din card
             const bg = card.querySelector(".card-parallax-bg");
             if(bg) {
-                gsap.to(bg, {
-                    scrollTrigger: {
-                        trigger: card,
-                        start: "top bottom",
-                        end: "bottom top",
-                        scrub: true
-                    },
-                    y: "20%"
-                });
+                gsap.to(bg, { scrollTrigger: { trigger: card, scrub: true }, y: "15%" });
             }
         });
 
-        // --- Horizontal Scroll Logic ---
-        const horizSection = document.querySelector(".horizontal-section");
+        // --- Horizontal Scroll ---
         const horizWrapper = document.querySelector(".horizontal-wrapper");
-        
         gsap.to(horizWrapper, {
             x: () => -(horizWrapper.scrollWidth - window.innerWidth),
             ease: "none",
             scrollTrigger: {
-                trigger: horizSection,
+                trigger: ".horizontal-section",
                 start: "top top",
                 end: () => "+=" + horizWrapper.scrollWidth,
                 scrub: 1,
-                pin: true,
-                anticipatePin: 1
+                pin: true
             }
         });
 
-        // --- Skew Effect on Fast Scroll ---
-        let proxy = { skew: 0 },
-            skewSetter = gsap.quickSetter(".bento-card", "skewY", "deg"),
-            clamp = gsap.utils.clamp(-10, 10);
-
-        ScrollTrigger.create({
-            onUpdate: (self) => {
-                let skew = clamp(self.getVelocity() / -300);
-                if (Math.abs(skew) > Math.abs(proxy.skew)) {
-                    proxy.skew = skew;
-                    gsap.to(proxy, {
-                        skew: 0, 
-                        duration: 0.8, 
-                        ease: "power3", 
-                        overwrite: true, 
-                        onUpdate: () => skewSetter(proxy.skew)
-                    });
-                }
-            }
-        });
-
-        // --- Three.js Scene Update ---
+        // --- Three.js Scene: Spiritul Italiei ---
         const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x0f0a08, 0.05);
+        scene.fog = new THREE.FogExp2(0x0f0a08, 0.04);
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.z = 5;
 
@@ -356,32 +329,64 @@
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-        // Geometrii abstracte (Pasta-inspired)
-        const pastaGroup = new THREE.Group();
-        const penneGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.4, 8, 1, true);
+        const group = new THREE.Group();
+        scene.add(group);
+
+        // 1. "Limoncello Bottles" (Cilindri galbeni subtiri)
+        const bottleGeo = new THREE.CylinderGeometry(0.1, 0.1, 0.5, 12);
+        const bottleMat = new THREE.MeshBasicMaterial({ color: 0xf1c40f, wireframe: true, transparent: true, opacity: 0.3 });
+        
+        // 2. "Roșii Cherry" (Sfere roșii)
+        const tomatoGeo = new THREE.SphereGeometry(0.08, 8, 8);
+        const tomatoMat = new THREE.MeshBasicMaterial({ color: 0xe74c3c, wireframe: true, transparent: true, opacity: 0.4 });
+
+        // 3. "Penne Pasta" (Cilindri portocalii)
+        const penneGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.3, 6, 1, true);
         const pastaMat = new THREE.MeshBasicMaterial({ color: 0xe67e22, wireframe: true, transparent: true, opacity: 0.3 });
 
-        for(let i = 0; i < 50; i++) {
-            const m = new THREE.Mesh(penneGeo, pastaMat);
-            m.position.set((Math.random()-0.5)*15, (Math.random()-0.5)*40, (Math.random()-0.5)*10);
-            m.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, 0);
-            pastaGroup.add(m);
+        function addItems(geo, mat, count) {
+            for(let i = 0; i < count; i++) {
+                const m = new THREE.Mesh(geo, mat);
+                m.position.set((Math.random()-0.5)*15, (Math.random()-0.5)*40, (Math.random()-0.5)*10);
+                m.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, 0);
+                m.userData.rotationSpeed = Math.random() * 0.01;
+                group.add(m);
+            }
         }
-        scene.add(pastaGroup);
 
-        // Fly-through effect pe scroll
+        addItems(bottleGeo, bottleMat, 20);
+        addItems(tomatoGeo, tomatoMat, 30);
+        addItems(penneGeo, pastaMat, 40);
+
+        // Cuvinte plutitoare (Canvas Textures)
+        const words = ["PASTA", "LIMONCELLO", "NAPOLI", "AMORE", "FELICIANO", "CLUJ"];
+        words.forEach(text => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 256; canvas.height = 64;
+            ctx.fillStyle = 'rgba(255,255,255,0.2)';
+            ctx.font = 'bold 40px Playfair Display';
+            ctx.fillText(text, 10, 50);
+            
+            const tex = new THREE.CanvasTexture(canvas);
+            const spriteMat = new THREE.SpriteMaterial({ map: tex, transparent: true, opacity: 0.5 });
+            const sprite = new THREE.Sprite(spriteMat);
+            sprite.scale.set(2, 0.5, 1);
+            sprite.position.set((Math.random()-0.5)*15, (Math.random()-0.5)*40, (Math.random()-0.5)*10);
+            group.add(sprite);
+        });
+
         function animate() {
             requestAnimationFrame(animate);
             const scrollPos = window.scrollY * 0.005;
-            
-            // Camera "zboara" usor intr-o curba printre elemente
             camera.position.y = -scrollPos;
-            camera.position.x = Math.sin(scrollPos * 0.5) * 2;
-            camera.rotation.z = Math.sin(scrollPos * 0.2) * 0.1;
+            camera.position.x = Math.sin(scrollPos * 0.3) * 1.5;
 
-            pastaGroup.children.forEach((c, i) => {
-                c.rotation.x += 0.005;
-                c.rotation.y += 0.005;
+            group.children.forEach(c => {
+                if(c.rotation) {
+                    c.rotation.x += 0.005;
+                    c.rotation.y += 0.005;
+                }
             });
 
             renderer.render(scene, camera);
